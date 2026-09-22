@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   NeoScore design tokens
+   Status colours are RESERVED for risk state only (never decorative):
+     NORMAL   0–2   green
+     MODERATE 3–4   amber
+     SEVERE   5–7   red
+   Each is tuned per theme so text clears WCAG AA on the active surface.
+--------------------------------------------------------------------------- */
+:root {
+  --canvas: 247 249 252; /* #F7F9FC */
+  --panel: 255 255 255;
+  --chrome: 11 30 74; /* #0B1E4A */
+  --ink: 11 30 74;
+  --muted: 91 107 133;
+  --line: 220 227 238;
+  --accent: 47 92 200;
+
+  --risk-normal: 46 125 50; /* #2E7D32 */
+  --risk-moderate: 178 106 0; /* #B26A00 */
+  --risk-severe: 198 40 40; /* #C62828 */
+}
+
+.dark {
+  --canvas: 6 15 33;
+  --panel: 11 24 48;
+  --chrome: 11 30 74; /* #0B1E4A */
+  --ink: 226 234 246;
+  --muted: 138 156 184;
+  --line: 27 45 78;
+  --accent: 108 158 255;
+
+  /* Brighter tints of the same hues so text clears AA on the dark surface. */
+  --risk-normal: 86 199 110;
+  --risk-moderate: 240 168 58;
+  --risk-severe: 255 99 99;
+}
+
+@layer base {
+  * {
+    border-color: rgb(var(--line));
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background-color: rgb(var(--canvas));
+    color: rgb(var(--ink));
+    font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Tabular numerals everywhere numbers update live, so digits never jitter. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  ::selection {
+    background: rgb(var(--accent) / 0.3);
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--line)) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgb(var(--line));
+    border-radius: 999px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+/* Severe-state escalation pulse. Honours reduced-motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-severe-pulse {
+    animation: severe-pulse 1.2s ease-in-out infinite;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-severe-pulse {
+    animation: none;
+    box-shadow: 0 0 0 2px rgb(var(--risk-severe) / 0.85);
+  }
+}
+
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.skeleton-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgb(var(--muted) / 0.14),
+    transparent
+  );
+  animation: shimmer 1.6s infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer::after {
+    animation: none;
+  }
+}
